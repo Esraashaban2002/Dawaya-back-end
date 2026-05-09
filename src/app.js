@@ -1,0 +1,55 @@
+const express = require("express");
+const cors = require('cors')
+const morgan = require('morgan')
+const swaggerJsDoc = require('swagger-jsdoc')
+const swaggerUi = require('swagger-ui-express')
+
+const userRouter = require('./routes/userRouter')
+const app = express();
+
+app.use(express.json());
+
+if(process.env.NODE_ENV === 'development'){
+    app.use(morgan)
+}
+
+
+const swaggerOptions = {
+    swaggerDefinition :{
+        openapi : '3.0.0' ,
+        title : 'Auth System API',
+        description : "",
+        info : {
+            name : 'Develpoment'
+        },
+        contact :{
+
+        },
+        server:{
+            
+        }
+    },
+    apis : ['./src/routes/*.js']
+}
+
+const swaggerDocument = swaggerJsDoc(swaggerOptions)
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
+
+app.use('/api/auth', userRouter)
+
+// Health Check
+app.get('/' , (req,res) =>{
+    res.send('Auth API is running ... Check /api-docs for documentation')
+});
+
+// Error 
+app.use((err,req,res,next)=>{
+    const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
+    res.status(statusCode).json({
+        message : err.message,
+        stack : process.env.NODE_ENV === 'production' ? null : err.stack
+    })
+})
+
+module.exports = app;
