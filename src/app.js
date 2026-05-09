@@ -7,30 +7,35 @@ const swaggerUi = require('swagger-ui-express')
 const userRouter = require('./routes/userRouter')
 const app = express();
 
+// middlewares 
+
+app.use(cors())
 app.use(express.json());
 
 if(process.env.NODE_ENV === 'development'){
-    app.use(morgan)
+    app.use(morgan('dev'))
 }
 
 
 const swaggerOptions = {
-    swaggerDefinition :{
-        openapi : '3.0.0' ,
-        title : 'Auth System API',
-        description : "",
-        info : {
-            name : 'Develpoment'
-        },
-        contact :{
-
-        },
-        server:{
-            
-        }
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'Auth System API',
+      version: '1.0.0',
+      description: 'Authentication API documentation',
+      contact: {
+        name: 'Development Team'
+      }
     },
-    apis : ['./src/routes/*.js']
-}
+    servers: [
+      {
+        url: 'http://localhost:3000'
+      }
+    ]
+  },
+  apis: ['./src/routes/*.js']
+};
 
 const swaggerDocument = swaggerJsDoc(swaggerOptions)
 
