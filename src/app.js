@@ -9,7 +9,11 @@ const app = express();
 
 // middlewares 
 
-app.use(cors())
+app.use(cors({
+  origin: ["https://dawaya.up.railway.app"],
+  credentials: true
+}));
+
 app.use(express.json());
 
 if(process.env.NODE_ENV === 'development'){
@@ -30,7 +34,7 @@ const swaggerOptions = {
     },
     servers: [
       {
-        url: 'http://localhost:5000'
+        url: "https://dawaya.up.railway.app"
       }
     ]
   },
