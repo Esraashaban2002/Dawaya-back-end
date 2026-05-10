@@ -127,7 +127,7 @@ router.post("/forgetpassword",forgetpass);
 /**
  * @swagger
  * /api/auth/reastpassword:
- *   post:
+ *   put:
  *     summary: Reast Password
  *     tags: [Auth]
  *     requestBody:
@@ -152,7 +152,7 @@ router.post("/forgetpassword",forgetpass);
  *         description: Password reast successfully!
  */
 
-router.post("/reastpassword",reastpass);
+router.put("/reastpassword",reastpass);
 
 
 // router.delete("/logout", auth, async (req, res) => {

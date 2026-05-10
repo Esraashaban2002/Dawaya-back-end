@@ -138,9 +138,9 @@ exports.forgetpass =async (req, res) => {
     }
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    user.reastPasswordOtp = otp
-    const otpExpire = new Date(Date.now() + 10 * 60 * 1000); // 10 min
-    user.resetPasswordOtpExpire = otpExpire
+    user.resetPasswordOtp = otp
+    user.resetPasswordOtpExpire = new Date(Date.now() + 10 * 60 * 1000); // 10 min
+
     await user.save()
     // send email
     try {
@@ -179,12 +179,12 @@ exports.forgetpass =async (req, res) => {
 /**
  *
  * @desc Reast password
- * @route POST /api/auth/reastpassword
+ * @route PUT /api/auth/reastpassword
  */
 
 exports.reastpass =async (req, res) => {
   try {
-    const {email , otp , password} = req.body
+    const {email , password , otp} = req.body
     const user = await User.findOne({
       email,
       resetPasswordOtp : otp,
