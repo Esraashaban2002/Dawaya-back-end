@@ -2,7 +2,7 @@ const express = require("express");
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 const authMiddleware = require("../middlewares/auth");
-const { register, verifyEmail, login } = require("../controllers/authController");
+const { register, verifyEmail, login, forgetpass, reastpass } = require("../controllers/authController");
 const router = express.Router();
 const auth = authMiddleware.auth;
 
@@ -99,6 +99,60 @@ router.post("/verify", verifyEmail);
 
 router.post("/login",login);
 
+
+/**
+ * @swagger
+ * /api/auth/forgetpassword:
+ *   post:
+ *     summary: Forget Password
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *             properties:
+ *               email:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Reast OTP code sent to your email
+ */
+
+router.post("/forgetpassword",forgetpass);
+
+/**
+ * @swagger
+ * /api/auth/reastpassword:
+ *   post:
+ *     summary: Reast Password
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *               - otp
+ *             properties:
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               otp:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Password reast successfully!
+ */
+
+router.post("/reastpassword",reastpass);
 
 
 // router.delete("/logout", auth, async (req, res) => {

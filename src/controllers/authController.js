@@ -2,6 +2,7 @@
 const { sendEmail } = require("../config/mailer");
 const User = require("../models/User");
 
+// Create new User 
 /**
  * 
  * @desc Register user
@@ -94,6 +95,7 @@ exports.verifyEmail = async (req, res) => {
   }
 }
 
+// Login User
 /**
  *
  * @desc Login user
@@ -115,6 +117,91 @@ exports.login =async (req, res) => {
     // const accessToken = await user.generateToken(deviceInfo);
 
     res.status(200).json({success : true , user, role: user.role });
+  } catch (e) {
+    res.status(500).json({success : false , message: e.message});
+  }
+}
+
+// Forget Password 
+/**
+ *
+ * @desc Forget password
+ * @route POST /api/auth/forgetpassword
+ */
+
+exports.forgetpass =async (req, res) => {
+  try {
+    const {email} = req.body
+    const user = await User.findOne({email})
+    if(!user){
+        return res.status(404).json({success : false , message : 'email not found'})
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    user.reastPasswordOtp = otp
+    const otpExpire = new Date(Date.now() + 10 * 60 * 1000); // 10 min
+    user.resetPasswordOtpExpire = otpExpire
+    await user.save()
+    // send email
+    try {
+      await sendEmail({
+       to: email,
+        subject: "Verify your account",
+        html: `
+          <h2>Your verification code</h2>
+          <h1><b>${otp}</b></h1>
+          <p>This code will expire in 10 minutes</p>
+        `,
+      });
+
+      res.status(200).json({
+      success: true,
+      message: "Reast OTP code sent to your email",
+      email
+    });
+    
+    } catch (error) {
+      user.resetPasswordOtp = undefined;
+      user.resetPasswordOtpExpire = undefined
+      return res.status(500).json({
+        success: false,
+        message: error.message
+      });
+    }
+
+ 
+  } catch (e) {
+    res.status(500).json({success : false , message: e.message});
+  }
+}
+
+// Reast Password
+/**
+ *
+ * @desc Reast password
+ * @route POST /api/auth/reastpassword
+ */
+
+exports.reastpass =async (req, res) => {
+  try {
+    const {email , otp , password} = req.body
+    const user = await User.findOne({
+      email,
+      resetPasswordOtp : otp,
+      resetPasswordOtpExpire : {$gt : Date.now()}
+    })
+
+    if(!user){
+      return res.status(400).json({success : false , message : 'User not found ,Or Invalid ,Or Expierd otp'})
+    }
+
+    user.password = password;
+    user.resetPasswordOtp = undefined;
+    user.resetPasswordOtpExpire = undefined;
+
+    await user.save()
+    return res.status(200).json({success : true , message: 'Password reast successfully!'})
+ 
   } catch (e) {
     res.status(500).json({success : false , message: e.message});
   }
