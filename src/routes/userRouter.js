@@ -2,7 +2,7 @@ const express = require("express");
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 const authMiddleware = require("../middlewares/auth");
-const { register } = require("../controllers/authController");
+const { register, verifyEmail, login } = require("../controllers/authController");
 const router = express.Router();
 const auth = authMiddleware.auth;
 
@@ -42,32 +42,64 @@ const auth = authMiddleware.auth;
 
 router.post("/register", register);
 
+ /**
+  * @swagger
+  * /api/auth/verify:
+  *   post:
+  *     summary: Verify email OTP
+  *     tags: [Auth]
+  *     requestBody:
+  *       required: true
+  *       content:
+  *         application/json:
+  *           schema:
+  *             type: object
+  *             required:
+  *               - email
+  *               - otp
+  *             properties:
+  *               email:
+  *                 type: string
+  *               otp:
+  *                 type: string
+  *     responses:
+  *       200:
+  *         description: User verified successfully
+  *       400:
+  *         description: Invalid or expired OTP
+  */
 
-// router.post("/register", async (req, res) => {
-//   try {
-//     const user = new User(req.body);
-//     await user.save();
-//     res.status(200).send(user);
-//   } catch (e) {
-//   return  res.status(400).send(e.message);
-//   }
-// });
+router.post("/verify", verifyEmail);
 
-// router.post("/login", async (req, res) => {
-//   try {
-//     const user = await User.findByCredentials(
-//       req.body.email,
-//       req.body.password
-//     );
 
-//     const deviceInfo = req.headers["user-agent"] || "Unknown Device";
-//     const accessToken = await user.generateToken(deviceInfo);
+/**
+ * @swagger
+ * /api/auth/login:
+ *   post:
+ *     summary: Login a user
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: User login successfully
+ */
 
-//     res.status(200).send({ user, accessToken, role: user.role });
-//   } catch (e) {
-//     res.status(400).send(e.message);
-//   }
-// });
+router.post("/login",login);
+
+
 
 // router.delete("/logout", auth, async (req, res) => {
 //   try {
