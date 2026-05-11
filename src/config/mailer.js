@@ -1,18 +1,21 @@
 const nodemailer = require("nodemailer");
-const EMAIL_USER='esraashaban231@gmail.com'
-const EMAIL_PASS='htsiysivpwjfyyax'
+
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: "smtp-relay.brevo.com",
+  port: 587,
+  secure: false,
   auth: {
-    user: EMAIL_USER,
-    pass: EMAIL_PASS,
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
   },
+   family: 4, 
 });
+
 
 const sendEmail = async ({ to, subject, html }) => {
   try {
     const info = await transporter.sendMail({
-      from: `"Dawaya" <${EMAIL_USER}>`,
+      from: `"Dawaya" <${process.env.EMAIL_USER}>`,
       to,
       subject,
       html,
