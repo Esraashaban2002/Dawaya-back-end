@@ -29,7 +29,7 @@ const swaggerOptions = {
         name: 'Development Team'
       }
     },
-    servers: [`http://localhost:${process.env.PORT || 5000}`],
+    servers: [{url:`http://localhost:${process.env.PORT || 5000}`}],
   },
   apis: ['./src/routes/*.js']
 };
