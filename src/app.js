@@ -29,7 +29,7 @@ const swaggerOptions = {
         name: 'Development Team'
       }
     },
-    servers: [{ url: 'https://your-project.vercel.app' },
+    servers: [{ url: 'https://dawaya-api.vercel.app' },
       {url:`http://localhost:${process.env.PORT || 5000}`}],
   },
   apis: ['./src/routes/*.js']
