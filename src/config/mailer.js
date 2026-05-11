@@ -39,6 +39,7 @@ const transporter = nodemailer.createTransport({
   },
   connectionTimeout: 10000,
   socketTimeout: 15000,
+  family: 4,
 });
 
 
