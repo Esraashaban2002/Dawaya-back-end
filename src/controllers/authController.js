@@ -30,7 +30,7 @@ exports.register = async (req, res) => {
       phone,
       gender,
       otp,
-      otpExpire,
+      otpExpire
     });
 
     await user.save();
@@ -44,7 +44,7 @@ exports.register = async (req, res) => {
           <h2>Your verification code</h2>
           <h1><b>${otp}</b></h1>
           <p>This code will expire in 10 minutes</p>
-        `,
+        `
       });
     } catch (error) {
       return res.status(500).json({
