@@ -28,7 +28,8 @@
 
 
 const nodemailer = require("nodemailer");
-import { Resend } from 'resend';
+const { Resend } = require("resend");
+
 
 const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST,
@@ -52,11 +53,6 @@ transporter.verify((error, success) => {
   }
 });
 
-
-
-
-
-
 const sendEmail = async ({ to, subject, html }) => {
   try {
     const resend = new Resend('••••••••••••••••••••••••••••••••••••');
@@ -79,6 +75,10 @@ const sendEmail = async ({ to, subject, html }) => {
     throw new Error("Email sending failed");
   }
 };
+
+module.exports = { sendEmail };
+
+
 // const sendEmail = async ({ to, subject, html }) => {
 //   try {
 //     const info = await transporter.sendMail({
@@ -95,4 +95,4 @@ const sendEmail = async ({ to, subject, html }) => {
 //   }
 // };
 
-module.exports = { sendEmail };
+// module.exports = { sendEmail };
