@@ -149,10 +149,13 @@ exports.forgetpass =async (req, res) => {
        to: email,
         subject: "Verify your account",
         html: `
-          <h2>Your verification code</h2>
-          <h1><b>${otp}</b></h1>
-          <p>This code will expire in 10 minutes</p>
-        `,
+  <h2>Password Reset Request</h2>
+  <p>We received a request to reset your password.</p>
+  <p>Your verification code is:</p>
+  <h1 style="color:#2E86C1;"><b>${otp}</b></h1>
+  <p>This code will expire in <b>10 minutes</b>.</p>
+  <p>If you didn't request this, please ignore this email.</p>
+`
       });
 
       res.status(200).json({
