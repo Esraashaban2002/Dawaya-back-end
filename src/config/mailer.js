@@ -28,6 +28,7 @@
 
 
 const nodemailer = require("nodemailer");
+import { Resend } from 'resend';
 
 const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST,
@@ -51,20 +52,47 @@ transporter.verify((error, success) => {
   }
 });
 
+
+
+
+
+
 const sendEmail = async ({ to, subject, html }) => {
   try {
-    const info = await transporter.sendMail({
-      from: `"Dawaya" <${process.env.EMAIL_USER}>`,
-      to,
-      subject,
-      html,
-    });
+    const resend = new Resend('••••••••••••••••••••••••••••••••••••');
+    const { data, error } = await resend.emails.send({
+  from: 'onboarding@resend.dev',
+  to,
+  subject,
+  html
+  
+});
 
-    console.log("Email sent:", info.messageId);
+    if (error) {
+      console.error("Resend error:", error);
+      throw new Error("Email sending failed");
+    }
+
+    console.log("Email sent:", data.id);
   } catch (error) {
     console.error("Email error:", error.message);
     throw new Error("Email sending failed");
   }
 };
+// const sendEmail = async ({ to, subject, html }) => {
+//   try {
+//     const info = await transporter.sendMail({
+//       from: `"Dawaya" <${process.env.EMAIL_USER}>`,
+//       to,
+//       subject,
+//       html,
+//     });
+
+//     console.log("Email sent:", info.messageId);
+//   } catch (error) {
+//     console.error("Email error:", error.message);
+//     throw new Error("Email sending failed");
+//   }
+// };
 
 module.exports = { sendEmail };
