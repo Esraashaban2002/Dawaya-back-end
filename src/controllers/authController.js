@@ -1,6 +1,7 @@
 
 const { sendEmail } = require("../config/mailer");
 const User = require("../models/User");
+const { generateToken } = require("../util/generateToken");
 
 // Create new User 
 /**
@@ -113,10 +114,10 @@ exports.login =async (req, res) => {
        return res.status(401).json({success : false , message : 'please verify your email first'})
     }
 
-    // const deviceInfo = req.headers["user-agent"] || "Unknown Device";
-    // const accessToken = await user.generateToken(deviceInfo);
+    const deviceInfo = req.headers["user-agent"] || "Unknown Device";
+    const accessToken = await generateToken(user , deviceInfo);
 
-    res.status(200).json({success : true , user, role: user.role });
+    res.status(200).json({success : true , user });
   } catch (e) {
     res.status(500).json({success : false , message: e.message});
   }
@@ -206,3 +207,21 @@ exports.reastpass =async (req, res) => {
     res.status(500).json({success : false , message: e.message});
   }
 }
+
+// Logout 
+/**
+ *
+ * @desc Logout
+ * @route DELETE /api/auth/logout
+ */
+
+exports.login = async (req, res) => {
+  try {
+    req.user.tokens = req.user.tokens.filter((user) => user.token !== req.token);
+
+    await req.user.save();
+    res.json({success : true , message: "Logged out from this session." });
+  } catch (e) {
+    res.status(500).send({ error: e.message });
+  }
+};

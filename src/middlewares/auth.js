@@ -4,7 +4,7 @@ const User = require("../models/User");
 const auth = async (req, res, next) => {
   try {
     const token = req.header("Authorization")?.replace("Bearer ", "");
-    if (!token) return res.status(401).send({ error: "No token provided" });
+    if (!token) return res.status(401).json({ success : false , message: "No token provided" });
 
     const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 
@@ -19,8 +19,8 @@ const auth = async (req, res, next) => {
     req.user = user;
     req.token = token;
     next();
-  } catch (e) {
-    res.status(401).send({ error: "Please authenticate" });
+  } catch (error) {
+    res.status(401).json({ success : false ,message: "Please authenticate" });
   }
 };
 

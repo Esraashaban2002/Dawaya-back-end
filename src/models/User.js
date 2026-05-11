@@ -103,55 +103,6 @@ userSchema.methods.comparePassword = async function (password) {
   return await bcryptjs.compare(password, this.password)
 }
 
-// // Login
-
-userSchema.statics.findByCredentials = async (email, password) => {
-  const user = await User.findOne({ email: email });
-  if (!user) {
-    throw new Error("Unable to login");
-  }
-
-  const isMatch = await bcryptjs.compare(password, user.password);
-
-  if (!isMatch) {
-    throw new Error("Unable to login");
-  }
-  return user;
-};
-
-//////////////////////////////////////////////////////////////////////////////////////////
-
-userSchema.methods.generateToken = async function (deviceInfo) {
-  const user = this;
-
-  await user.cleanExpiredTokens();
-
-  const MAX_DEVICES = 3;
-
-  if (user.tokens.length >= MAX_DEVICES) {
-    user.tokens = user.tokens.slice(-MAX_DEVICES + 1);
-  }
-
-  const accessToken = jwt.sign(
-    { _id: user._id.toString() },
-    process.env.ACCESS_TOKEN_SECRET,
-    { expiresIn: "1d" }
-  );
-
-  const now = new Date();
-  const accessExpiry = new Date(now.getTime() + 24 * 60 * 60 * 1000);
-
-  user.tokens.push({
-    token: accessToken,
-    deviceInfo,
-    createdAt: now,
-    expiresAt: accessExpiry,
-  });
-
-  await user.save();
-
-  return accessToken;
-};
 
 userSchema.methods.cleanExpiredTokens = async function () {
   const user = this;
