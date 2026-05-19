@@ -12,6 +12,8 @@ const { generateToken } = require("../util/generateToken");
 
 exports.register = async (req, res) => {
   try {
+    console.log("regstrajik");
+    
     const { username, email, password , phone ,gender} = req.body;
     const userExist = await User.findOne({ email })
     if (userExist) {
@@ -33,17 +35,17 @@ exports.register = async (req, res) => {
       otpExpire
     });
 
-    await user.save();
-
+    
     // send email
     try {
+      console.log("send email")
       await sendEmail({
-       to: email,
+        to: email,
         subject: "Verify your account",
         html: `
-          <h2>Your verification code</h2>
-          <h1><b>${otp}</b></h1>
-          <p>This code will expire in 10 minutes</p>
+        <h2>Your verification code</h2>
+        <h1><b>${otp}</b></h1>
+        <p>This code will expire in 10 minutes</p>
         `
       });
     } catch (error) {
@@ -53,6 +55,8 @@ exports.register = async (req, res) => {
       });
     }
 
+    await user.save();
+    
     res.status(201).json({
       success: true,
       message: "Verification code sent to your email",
@@ -218,7 +222,7 @@ exports.reastpass =async (req, res) => {
  * @route DELETE /api/auth/logout
  */
 
-exports.login = async (req, res) => {
+exports.logout = async (req, res) => {
   try {
     req.user.tokens = req.user.tokens.filter((user) => user.token !== req.token);
 

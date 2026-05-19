@@ -2,7 +2,7 @@ const express = require("express");
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 const authMiddleware = require("../middlewares/auth");
-const { register, verifyEmail, login, forgetpass, reastpass } = require("../controllers/authController");
+const { register, verifyEmail, login, forgetpass, reastpass, logout } = require("../controllers/authController");
 const router = express.Router();
 const auth = authMiddleware.auth;
 
@@ -154,6 +154,29 @@ router.post("/forgetpassword",forgetpass);
 
 router.put("/reastpassword",reastpass);
 
+/**
+ * @swagger
+ * /api/auth/logout:
+ *   delete:
+ *     summary: logout form the section
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - token
+ *             properties:
+ *               token:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Password reast successfully!
+ */
+
+ router.delete("/logout", logout)
 
 // router.delete("/logout", auth, async (req, res) => {
 //   try {

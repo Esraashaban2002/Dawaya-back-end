@@ -3,7 +3,6 @@ const cors = require('cors')
 const morgan = require('morgan')
 const swaggerJsDoc = require('swagger-jsdoc')
 const swaggerUi = require('swagger-ui-express')
-
 const userRouter = require('./routes/userRouter')
 const app = express();
 
@@ -33,7 +32,7 @@ const swaggerOptions = {
         url: process.env.BASE_URL || 'http://localhost:5000'
       }],
   },
-  apis: ['./src/routes/*.js']
+  apis: ['./src/routes/*.js', './routes/*.js']
 };
 
 const swaggerDocument = swaggerJsDoc(swaggerOptions)

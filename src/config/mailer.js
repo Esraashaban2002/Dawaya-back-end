@@ -2,10 +2,12 @@ const nodemailer = require('nodemailer');
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
+  port: process.env.EMAIL_PORT,
+  family: 4,
   auth: {
     user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  }
+    pass: process.env.EMAIL_PASS,
+  },
 });
 
 const sendEmail = async ({ to, subject, html}) => {
@@ -22,7 +24,7 @@ const sendEmail = async ({ to, subject, html}) => {
     };
 
     const result = await transporter.sendMail(mailOptions);
-    console.log('Email sent:', result.messageId);
+    console.log('Email sent:', result);
   } catch (error) {
     console.error('Email error:', error.message);
     throw error;
