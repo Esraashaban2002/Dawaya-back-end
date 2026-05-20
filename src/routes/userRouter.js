@@ -178,16 +178,6 @@ router.put("/reastpassword",reastpass);
 
  router.delete("/logout", logout)
 
-// router.delete("/logout", auth, async (req, res) => {
-//   try {
-//     req.user.tokens = req.user.tokens.filter((el) => el.token !== req.token);
-
-//     await req.user.save();
-//     res.send({ message: "Logged out from this session." });
-//   } catch (e) {
-//     res.status(500).send({ error: e.message });
-//   }
-// });
 
 // router.delete("/logoutAll", auth, async (req, res) => {
 //   try {
