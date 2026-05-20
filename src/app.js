@@ -29,10 +29,10 @@ const swaggerOptions = {
       }
     },
     servers: [ {
-        url: process.env.BASE_URL || 'http://localhost:5000'
+        url: process.env.BASE_URL || 'https://dawaya-back-end.vercel.app' || 'http://localhost:5000'
       }],
   },
-  apis: ['./src/routes/*.js', './routes/*.js']
+  apis: [__dirname + '/routes/*.js']
 };
 
 const swaggerDocument = swaggerJsDoc(swaggerOptions)
