@@ -2,7 +2,10 @@
 const { sendEmail } = require("../config/mailer");
 const User = require("../models/User");
 const { generateToken } = require("../util/generateToken");
-
+const {
+  successResponse,
+  errorResponse,
+} = require('../util/response');
 // Create new User 
 /**
  * 
@@ -13,10 +16,10 @@ const { generateToken } = require("../util/generateToken");
 exports.register = async (req, res) => {
   try {
     const { username, email, password , phone ,gender} = req.body;
-    const userExist = await User.findOne({ email })
+    const userExist = await User.findOne({ email });
     if (userExist) {
-      return res.status(400).json({ error: "User already exists" });
-    }
+      return errorResponse(res , 400 , "هذا البريد الإلكتروني مستخدم بالفعل");
+    };
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
@@ -36,7 +39,7 @@ exports.register = async (req, res) => {
     
     // send email
     try {
-      console.log("send email")
+      console.log("send email");
       await sendEmail({
         to: email,
         subject: "Verify your account",
@@ -47,56 +50,46 @@ exports.register = async (req, res) => {
         `
       });
     } catch (error) {
-      return res.status(500).json({
-        success: false,
-        message: error.message
-      });
-    }
+      return errorResponse(res , 500 , error.message);
+    };
 
     await user.save();
     
-    res.status(201).json({
-      success: true,
-      message: "Verification code sent to your email",
-      email
-    });
+    successResponse(res , 201 , "تم إرسال كود التحقق إلى بريدك الإلكتروني" , email);
+ 
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message
-    });
-  }
-}
+    return errorResponse(res ,500, error.message);
+  };
+};
 
+// verify Email
 /**
  *
- * @desc Verif Email OTP
+ * @desc Verify Email OTP
  * @route POST /api/auth/verify
  */
 
 exports.verifyEmail = async (req, res) => {
   try {
-    const { email, otp } = req.body
+    const { email, otp } = req.body;
     const user = await User.findOne({
       email, otp, otpExpire: { $gt: Date.now() }
     });
     if (!user) {
-      return res.status(400).json({ success: false, message: 'Invalid or expired OTP' })
+      return errorResponse(res ,400, 'كود التحقق غير صحيح أو انتهت صلاحيته');
     };
     user.isVerified = true;
     user.otp = undefined;
     user.otpExpire = undefined;
 
-    await user.save()
+    await user.save();
 
-    res.status(200).json({
-      success: true,
-      message: 'User is verified and can now login'
-    })
+    successResponse(res, 200, 'تم تفعيل الحساب بنجاح، يمكنك تسجيل الدخول الآن' );
+
   } catch (error) {
-    return res.status(500).json({ success: false, message: 'user is not verifed' })
-  }
-}
+    return errorResponse(res , 500 , 'user is not verifed');
+  };
+};
 
 // Login User
 /**
@@ -107,23 +100,25 @@ exports.verifyEmail = async (req, res) => {
 
 exports.login =async (req, res) => {
   try {
-    const {email , password} = req.body
+    const {email , password} = req.body;
     const user = await User.findOne({email}).select('+password');
     if(!user || !(await user.comparePassword(password))){
-        return res.status(401).json({success : false , message : 'Invalid email or password'})
-    }
+        return errorResponse(res , 401 , 'البريد الإلكتروني أو كلمة المرور غير صحيحة');
+    };
     if(!user.isVerified){
-       return res.status(401).json({success : false , message : 'please verify your email first'})
-    }
+       return errorResponse(res , 401 , 'يرجى تفعيل البريد الإلكتروني أولاً');
+    };
 
     const deviceInfo = req.headers["user-agent"] || "Unknown Device";
     const accessToken = await generateToken(user , deviceInfo);
 
-    res.status(200).json({success : true , user });
+    user.password = undefined;
+
+    successResponse(res ,200, "تم تسجيل الدخول بنجاح" , {accessToken , user} );
   } catch (e) {
-    res.status(500).json({success : false , message: e.message});
-  }
-}
+    errorResponse(res ,500, error.message);
+  };
+};
 
 // Forget Password 
 /**
@@ -132,19 +127,19 @@ exports.login =async (req, res) => {
  * @route POST /api/auth/forgetpassword
  */
 
-exports.forgetpass =async (req, res) => {
+exports.forgetpassword =async (req, res) => {
   try {
-    const {email} = req.body
-    const user = await User.findOne({email})
+    const {email} = req.body;
+    const user = await User.findOne({email});
     if(!user){
-        return res.status(404).json({success : false , message : 'email not found'})
-    }
+        return errorResponse(res , 404 , 'البريد الإلكتروني غير موجود');
+    };
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    user.resetPasswordOtp = otp
+    user.resetPasswordOtp = otp;
     user.resetPasswordOtpExpire = new Date(Date.now() + 10 * 60 * 1000); // 10 min
 
-    await user.save()
+    await user.save();
     // send email
     try {
       await sendEmail({
@@ -160,26 +155,19 @@ exports.forgetpass =async (req, res) => {
 `
       });
 
-      res.status(200).json({
-      success: true,
-      message: "Reast OTP code sent to your email",
-      email
-    });
+      successResponse(res , 200, "تم إرسال كود إعادة تعيين كلمة المرور إلى بريدك الإلكتروني" , email );
     
     } catch (error) {
       user.resetPasswordOtp = undefined;
       user.resetPasswordOtpExpire = undefined
-      return res.status(500).json({
-        success: false,
-        message: error.message
-      });
-    }
+      return errorResponse(res , 500, error.message);
+    };
 
  
   } catch (e) {
-    res.status(500).json({success : false , message: e.message});
-  }
-}
+    errorResponse(res , 500, error.message);
+  };
+};
 
 // Reast Password
 /**
@@ -188,30 +176,30 @@ exports.forgetpass =async (req, res) => {
  * @route PUT /api/auth/reastpassword
  */
 
-exports.reastpass =async (req, res) => {
+exports.resetPassword =async (req, res) => {
   try {
-    const {email , password , otp} = req.body
+    const {email , password , otp} = req.body;
     const user = await User.findOne({
       email,
       resetPasswordOtp : otp,
       resetPasswordOtpExpire : {$gt : Date.now()}
-    })
+    });
 
     if(!user){
-      return res.status(400).json({success : false , message : 'User not found ,Or Invalid ,Or Expierd otp'})
-    }
+      return errorResponse(res ,400, 'كود التحقق غير صحيح أو منتهي الصلاحية');
+    };
 
     user.password = password;
     user.resetPasswordOtp = undefined;
     user.resetPasswordOtpExpire = undefined;
 
-    await user.save()
-    return res.status(200).json({success : true , message: 'Password reast successfully!'})
+    await user.save();
+    return successResponse(res , 200 ,'تم إعادة تعيين كلمة المرور بنجاح' );
  
-  } catch (e) {
-    res.status(500).json({success : false , message: e.message});
-  }
-}
+  } catch (error) {
+    errorResponse(res , 500 , error.message);
+  };
+};
 
 // Logout 
 /**
@@ -225,8 +213,9 @@ exports.logout = async (req, res) => {
     req.user.tokens = req.user.tokens.filter((user) => user.token !== req.token);
 
     await req.user.save();
-    res.json({success : true , message: "Logged out from this session." });
-  } catch (e) {
-    res.status(500).send({ error: e.message });
-  }
+    successResponse(res, 200 ,"تم تسجيل الخروج بنجاح");
+  } catch (error) {
+    errorResponse(res , 500, error.message);
+  };
 };
+

@@ -1,9 +1,11 @@
 const express = require("express");
-const cors = require('cors')
-const morgan = require('morgan')
-const swaggerJsDoc = require('swagger-jsdoc')
-const swaggerUi = require('swagger-ui-express')
-const userRouter = require('./routes/userRouter')
+const cors = require('cors');
+const morgan = require('morgan');
+const swaggerJsDoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
+const authRouter = require('./routes/authRouter');
+const userRouter = require('./routes/userRouter');
+const medicineRouter = require('./routes/medicineRouter')
 const app = express();
 
 // middlewares 
@@ -21,7 +23,7 @@ const swaggerOptions = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'Auth System API',
+      title: 'Dawaya System API',
       version: '1.0.0',
       description: 'Authentication API documentation',
       contact: {
@@ -46,7 +48,9 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
   ]
 }))
 
-app.use('/api/auth', userRouter)
+app.use('/api/auth', authRouter);
+app.use('/api/user', userRouter);
+app.use('/api/medicines', medicineRouter);
 
 // Health Check
 app.get('/' , (req,res) =>{

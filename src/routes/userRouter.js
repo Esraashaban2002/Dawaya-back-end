@@ -1,83 +1,60 @@
 const express = require("express");
-const User = require("../models/User");
-const jwt = require("jsonwebtoken");
 const authMiddleware = require("../middlewares/auth");
-const { register, verifyEmail, login, forgetpass, reastpass, logout } = require("../controllers/authController");
+const { getProfile, updateProfile, changePassword } = require("../controllers/userController");
+
 const router = express.Router();
 const auth = authMiddleware.auth;
 
 /**
  * @swagger
- * /api/auth/register:
- *   post:
- *     summary: Register a new user
- *     tags: [Auth]
+ * /api/user/profile:
+ *   get:
+ *     summary: Get user profile
+ *     tags: [User]
+ *     responses:
+ *       200:
+ *         description: Profile fetched successfully
+ *       401:
+ *         description: Unauthorized
+ */
+router.get("/profile", auth, getProfile);
+
+/**
+ * @swagger
+ * /api/user/profile:
+ *   put:
+ *     summary: Update user profile
+ *     tags: [User]
  *     requestBody:
- *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
- *             required:
- *               - username
- *               - email
- *               - password
- *               - phone
- *               - gender
  *             properties:
  *               username:
  *                 type: string
- *               email:
- *                 type: string
- *               password:
- *                 type: string
+ *                 example: Jonh
  *               phone:
  *                 type: string
+ *                 example: 01002345678
+ *               age:
+ *                 type: number
+ *                 example: 20
  *               gender:
  *                 type: string
+ *                 example: male
  *     responses:
- *       201:
- *         description: User registered successfully
+ *       200:
+ *         description: Profile updated successfully
  */
-
-router.post("/register", register);
-
- /**
-  * @swagger
-  * /api/auth/verify:
-  *   post:
-  *     summary: Verify email OTP
-  *     tags: [Auth]
-  *     requestBody:
-  *       required: true
-  *       content:
-  *         application/json:
-  *           schema:
-  *             type: object
-  *             required:
-  *               - email
-  *               - otp
-  *             properties:
-  *               email:
-  *                 type: string
-  *               otp:
-  *                 type: string
-  *     responses:
-  *       200:
-  *         description: User verified successfully
-  *       400:
-  *         description: Invalid or expired OTP
-  */
-
-router.post("/verify", verifyEmail);
-
+router.put("/profile", auth, updateProfile);
 
 /**
  * @swagger
- * /api/auth/login:
- *   post:
- *     summary: Login a user
- *     tags: [Auth]
+ * /api/user/changepassword:
+ *   patch:
+ *     summary: Change user password
+ *     tags: [User]
  *     requestBody:
  *       required: true
  *       content:
@@ -85,108 +62,21 @@ router.post("/verify", verifyEmail);
  *           schema:
  *             type: object
  *             required:
- *               - email
- *               - password
+ *               - oldPassword
+ *               - newPassword
  *             properties:
- *               email:
+ *               oldPassword:
  *                 type: string
- *               password:
+ *                 example: OldPass@123
+ *               newPassword:
  *                 type: string
+ *                 example: NewPass@456
  *     responses:
  *       200:
- *         description: User login successfully
+ *         description: Password changed successfully
+ *       400:
+ *         description: Wrong current password
  */
-
-router.post("/login",login);
-
-
-/**
- * @swagger
- * /api/auth/forgetpassword:
- *   post:
- *     summary: Forget Password
- *     tags: [Auth]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - email
- *             properties:
- *               email:
- *                 type: string
- *     responses:
- *       200:
- *         description: Reast OTP code sent to your email
- */
-
-router.post("/forgetpassword",forgetpass);
-
-/**
- * @swagger
- * /api/auth/reastpassword:
- *   put:
- *     summary: Reast Password
- *     tags: [Auth]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - email
- *               - password
- *               - otp
- *             properties:
- *               email:
- *                 type: string
- *               password:
- *                 type: string
- *               otp:
- *                 type: string
- *     responses:
- *       200:
- *         description: Password reast successfully!
- */
-
-router.put("/reastpassword",reastpass);
-
-/**
- * @swagger
- * /api/auth/logout:
- *   delete:
- *     summary: logout form the section
- *     tags: [Auth]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - token
- *             properties:
- *               token:
- *                 type: string
- *     responses:
- *       200:
- *         description: Password reast successfully!
- */
-
- router.delete("/logout", logout)
-
-
-// router.delete("/logoutAll", auth, async (req, res) => {
-//   try {
-//     req.user.tokens = [];
-//     await req.user.save();
-//     res.send({ message: "Logged out from all sessions." });
-//   } catch (e) {
-//     res.status(500).send({ error: e.message });
-//   }
-// });
+router.patch("/change-password", auth, changePassword);
 
 module.exports = router;
