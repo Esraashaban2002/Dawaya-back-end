@@ -208,6 +208,7 @@ exports.resetPassword =async (req, res) => {
  * @route DELETE /api/auth/logout
  */
 
+
 exports.logout = async (req, res) => {
   try {
     req.user.tokens = req.user.tokens.filter((user) => user.token !== req.token);
@@ -219,3 +220,44 @@ exports.logout = async (req, res) => {
   };
 };
 
+// Contact Us
+/**
+ *
+ * @desc Contact Us
+ * @route POST /api/contact
+ */
+exports.contactUs = async (req, res) => {
+  try {
+    const { name, email, message } = req.body;
+
+    // بعت الرسالة على إيميل الشركة
+    await sendEmail({
+      to: process.env.EMAIL_USER,
+      subject: `رسالة جديدة من ${name}`,
+      html: `
+        <h2>رسالة جديدة من موقع داوايا</h2>
+        <p><strong>الاسم:</strong> ${name}</p>
+        <p><strong>الإيميل:</strong> ${email}</p>
+        <p><strong>الرسالة:</strong></p>
+        <p>${message}</p>
+      `
+    });
+
+    // بعت رسالة تأكيد للمستخدم
+    await sendEmail({
+      to: email,
+      subject: 'شكراً لتواصلك مع داوايا',
+      html: `
+        <h2>مرحباً ${name}</h2>
+        <p>وصلتنا رسالتك وهنرد عليك في أقرب وقت 😊</p>
+        <p><strong>رسالتك:</strong></p>
+        <p>${message}</p>
+      `
+    });
+
+    successResponse(res , 200 , 'تم إرسال رسالتك بنجاح' );
+
+  } catch (error) {
+    errorResponse(res , 500 , error.message );
+  }
+};

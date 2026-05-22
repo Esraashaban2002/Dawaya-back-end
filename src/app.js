@@ -5,7 +5,11 @@ const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 const authRouter = require('./routes/authRouter');
 const userRouter = require('./routes/userRouter');
-const medicineRouter = require('./routes/medicineRouter')
+const medicineRouter = require('./routes/medicineRouter');
+const pharmacyRouter = require('./routes/pharmacyRouter');
+const contactRouter = require('./routes/contactRouter');
+
+
 const app = express();
 
 // middlewares 
@@ -48,9 +52,13 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
   ]
 }))
 
+// router  
+
 app.use('/api/auth', authRouter);
 app.use('/api/user', userRouter);
 app.use('/api/medicines', medicineRouter);
+app.use('/api/pharmacies', pharmacyRouter);
+app.use('/api/contact', contactRouter);
 
 // Health Check
 app.get('/' , (req,res) =>{

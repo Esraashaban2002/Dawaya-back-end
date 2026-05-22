@@ -35,7 +35,7 @@ const medicineSchema = new mongoose.Schema({
   }
 }, { timestamps: true });
 
-// ✅ Text index للبحث بالاسم
+//  Text index للبحث بالاسم
 medicineSchema.index({ name: 'text', genericName: 'text' });
 
 module.exports = mongoose.model('Medicine', medicineSchema);
