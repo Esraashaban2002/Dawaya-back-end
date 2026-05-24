@@ -1,10 +1,11 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+const { errorResponse } = require("../util/response");
 
 const auth = async (req, res, next) => {
   try {
     const token = req.header("Authorization")?.replace("Bearer ", "");
-    if (!token) return res.status(401).json({ success : false , message: "No token provided" });
+    if (!token) return errorResponse(res ,401 , "No token provided");
 
     const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 
@@ -20,14 +21,14 @@ const auth = async (req, res, next) => {
     req.token = token;
     next();
   } catch (error) {
-    res.status(401).json({ success : false ,message: "Please authenticate" });
+    errorResponse(res ,401 , "Please authenticate" );
   }
 };
 
 function checkRole(...roles) {
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {
-      return res.sendStatus(403);
+      return errorResponse(res ,403 , 'مش مسموحلك بالدخول' )
     }
     next();
   };

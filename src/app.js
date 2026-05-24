@@ -8,7 +8,8 @@ const userRouter = require('./routes/userRouter');
 const medicineRouter = require('./routes/medicineRouter');
 const pharmacyRouter = require('./routes/pharmacyRouter');
 const contactRouter = require('./routes/contactRouter');
-
+const adminRouter = require('./routes/adminRouter');
+const pharmacyDashRouter = require('./routes/pharmacyDashRouter');
 
 const app = express();
 
@@ -59,6 +60,9 @@ app.use('/api/user', userRouter);
 app.use('/api/medicines', medicineRouter);
 app.use('/api/pharmacies', pharmacyRouter);
 app.use('/api/contact', contactRouter);
+app.use('/api/admin', adminRouter);
+app.use('/api/pharmacy', pharmacyDashRouter);
+
 
 // Health Check
 app.get('/' , (req,res) =>{
