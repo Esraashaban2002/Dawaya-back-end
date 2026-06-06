@@ -71,12 +71,8 @@ router.post("/register", register);
  *           schema:
  *             type: object
  *             required:
- *               - email
  *               - otp
  *             properties:
- *               email:
- *                 type: string 
- *                 example: jonh@example.com
  *               otp:
  *                 type: string
  *                 example: 123456

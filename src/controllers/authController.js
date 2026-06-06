@@ -71,9 +71,9 @@ exports.register = async (req, res) => {
 
 exports.verifyEmail = async (req, res) => {
   try {
-    const { email, otp } = req.body;
+    const {otp} = req.body;
     const user = await User.findOne({
-      email, otp, otpExpire: { $gt: Date.now() }
+       otp, otpExpire: { $gt: Date.now() }
     });
     if (!user) {
       return errorResponse(res ,400, 'كود التحقق غير صحيح أو انتهت صلاحيته');
