@@ -12,10 +12,11 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: [true, 'Please add password'],
+    required: function() { return !this.googleId; },
     minlength: 8,
     select: false,
     validate(value) {
+       if (this.googleId) return;
       const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
 
       if (!passwordRegex.test(value)) {
@@ -39,7 +40,7 @@ const userSchema = new mongoose.Schema({
   },
   phone: {
     type: String,
-    required: true,
+    required: function() { return !this.googleId; },
     minlength: 11,
     maxlength: 11
   },
@@ -48,7 +49,7 @@ const userSchema = new mongoose.Schema({
   },
   gender: {
     type: String,
-    required: true,
+    required: function() { return !this.googleId; },
     enum: ["male", "female"],
   },
   role: {
@@ -57,6 +58,10 @@ const userSchema = new mongoose.Schema({
     default: "user",
     trim: true,
   },
+  googleId: {
+  type: String,
+  default: null
+},
   isVerified: {
     type: Boolean,
     default: false

@@ -10,6 +10,7 @@ const pharmacyRouter = require('./routes/pharmacyRouter');
 const contactRouter = require('./routes/contactRouter');
 const adminRouter = require('./routes/adminRouter');
 const pharmacyDashRouter = require('./routes/pharmacyDashRouter');
+const passport = require('./config/passport');
 
 const app = express();
 
@@ -56,6 +57,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
 // router  
 
 app.use('/api/auth', authRouter);
+app.use(passport.initialize())
 app.use('/api/user', userRouter);
 app.use('/api/medicines', medicineRouter);
 app.use('/api/pharmacies', pharmacyRouter);

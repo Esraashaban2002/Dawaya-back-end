@@ -1,4 +1,5 @@
 const express = require("express");
+const passport = require('passport');
 const authMiddleware = require("../middlewares/auth");
 const { 
   register, 
@@ -8,6 +9,7 @@ const {
   resetPassword, 
   logout
 } = require("../controllers/authController");
+const { googleAuth, googleCallback, googleFailure } = require("../controllers/googleAuthController");
 const router = express.Router();
 const auth = authMiddleware.auth;
 
@@ -208,5 +210,52 @@ router.delete("/logout",auth, logout)
 //   }
 // });
 
+/**
+ * @swagger
+ * /api/auth/google:
+ *   get:
+ *     summary: Login with Google
+ *     tags: [Auth]
+ *     responses:
+ *       302:
+ *         description: Redirect to Google login
+ */
+router.get('/google', googleAuth);
+
+/**
+ * @swagger
+ * /api/auth/google/callback:
+ *   get:
+ *     summary: Google OAuth callback
+ *     tags: [Auth]
+ *     responses:
+ *       302:
+ *         description: Redirect to frontend with token
+ */
+// الـ Callback
+router.get('/google/callback',
+  (req, res, next) => {
+    passport.authenticate('google', { 
+      session: false
+    }, (err, user, info) => {
+      if (err) {
+        return res.status(500).json({ success: false, message: err.message });
+      }
+      if (!user) {
+        // info.message جاي من done(null, false, { message: '...' })
+        return res.status(401).json({ 
+          success: false, 
+          message: info?.message || 'فشل تسجيل الدخول بـ Google' 
+        });
+      }
+      req.user = user;
+      next();
+    })(req, res, next);
+  },
+  googleCallback
+);
+
+// لما بيفشل
+router.get('/google/failure', googleFailure);
 
 module.exports = router;
