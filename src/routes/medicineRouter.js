@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getAllMedicines, getMedicineById } = require('../controllers/medicineController');
+const { getAllMedicines, getMedicineById, createMedicine } = require('../controllers/medicineController');
 const { auth, isAdmin } = require('../middlewares/auth');
 
 /**
@@ -53,5 +53,61 @@ router.get('/', getAllMedicines);
  *         description: Medicine not found
  */
 router.get('/:id', getMedicineById);
+
+/**
+ * @swagger
+ * /api/medicines:
+ *   post:
+ *     summary: Add a new medicine
+ *     tags: [Medicines]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - genericName
+ *               - category
+ *               - price
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: "بروفين 400 مجم"
+ *               genericName:
+ *                 type: string
+ *                 example: "Ibuprofen"
+ *               category:
+ *                 type: string
+ *                 example: "مسكنات"
+ *               description:
+ *                 type: string
+ *                 example: "مسكن للألم ومضاد للالتهابات"
+ *               price:
+ *                 type: number
+ *                 example: 25
+ *               quantity:
+ *                 type: number
+ *                 example: 150
+ *               requiresPrescription:
+ *                 type: boolean
+ *                 example: false
+ *               image:
+ *                 type: string
+ *                 example: "https://example.com/image.jpg"
+ *               manufacturer:
+ *                 type: string
+ *                 example: "شركة فاركو"
+ *     responses:
+ *       201:
+ *         description: Medicine created successfully
+ *       400:
+ *         description: Medicine already exists
+ *       500:
+ *         description: Internal server error
+ */
+router.post('/', createMedicine);
+
 
 module.exports = router;
