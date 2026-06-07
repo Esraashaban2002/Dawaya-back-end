@@ -235,20 +235,16 @@ router.get('/google/callback',
       session: false
     }, (err, user, info) => {
       if (err) {
-        return res.status(500).json({ success: false, message: err.message });
+        return res.redirect(`${process.env.FRONTEND_URL}/auth/error?message=${err.message}`);
       }
       if (!user) {
-        // info.message جاي من done(null, false, { message: '...' })
-        return res.status(401).json({ 
-          success: false, 
-          message: info?.message || 'فشل تسجيل الدخول بـ Google' 
-        });
+        return res.redirect(`${process.env.FRONTEND_URL}/auth/error?message=${encodeURIComponent(info?.message || 'فشل تسجيل الدخول')}`);
       }
       req.user = user;
       next();
     })(req, res, next);
   },
-  googleCallback
+  googleCallback 
 );
 
 // لما بيفشل
