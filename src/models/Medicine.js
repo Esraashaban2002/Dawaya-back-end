@@ -27,8 +27,9 @@ const medicineSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
-  image: {
-    type: String   // URL الصورة
+  images: {
+    type: [String],  // array of URLs
+    default: []
   },
   manufacturer: {
     type: String   // الشركة المصنعة
