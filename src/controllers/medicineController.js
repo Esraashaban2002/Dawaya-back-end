@@ -88,7 +88,7 @@ exports.createMedicine = async (req, res) => {
             description,
             price,
             requiresPrescription,
-            image,
+            images,
             manufacturer
         } = req.body;
 
@@ -105,7 +105,7 @@ exports.createMedicine = async (req, res) => {
             description,
             price,
             requiresPrescription,
-            image,
+            images,
             manufacturer
         });
 
@@ -126,7 +126,7 @@ exports.createMedicine = async (req, res) => {
  */
 exports.updateMedicine = async (req, res) => {
     try {
-        const allowedUpdates = ['name', 'genericName', 'category', 'description', 'price', 'requiresPrescription', 'image', 'manufacturer'];
+        const allowedUpdates = ['name', 'genericName', 'category', 'description', 'price', 'requiresPrescription', 'images', 'manufacturer'];
         const updates = Object.keys(req.body);
 
         const isValid = updates.every(update => allowedUpdates.includes(update));
