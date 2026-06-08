@@ -15,7 +15,7 @@ exports.getProfile = async (req, res) => {
       "تم جلب بيانات المستخدم بنجاح",
       req.user
     );
-  } catch (e) {
+  } catch (error) {
     errorResponse(
       res,
       500,
@@ -56,7 +56,7 @@ exports.updateProfile = async (req, res) => {
       req.user
     );
 
-  } catch (e) {
+  } catch (error) {
    errorResponse(
       res,
       500,
@@ -105,7 +105,7 @@ exports.changePassword = async (req, res) => {
       "تم تغيير كلمة المرور بنجاح، يرجى تسجيل الدخول مرة أخرى"
     );
 
-  } catch (e) {
+  } catch (error) {
     errorResponse(
       res,
       500,
