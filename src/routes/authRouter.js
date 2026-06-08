@@ -7,9 +7,11 @@ const {
   login, 
   forgetpassword, 
   resetPassword, 
-  logout
+  logout,
+  submitPharmacyRequest
 } = require("../controllers/authController");
 const { googleAuth, googleCallback, googleFailure } = require("../controllers/googleAuthController");
+const upload = require('../config/multer');
 const router = express.Router();
 const auth = authMiddleware.auth;
 
@@ -195,6 +197,76 @@ router.put("/reastpassword", resetPassword);
 
 router.delete("/logout",auth, logout)
 
+
+
+/**
+ * @swagger
+ * /api/auth/pharmacy-request:
+ *   post:
+ *     summary: Submit a pharmacy registration request
+ *     tags: [Pharmacy Request]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - pharmacyName
+ *               - pharmacyPhone
+ *               - deliveryArea
+ *               - workingHours
+ *               - managerName
+ *               - managerPhone
+ *               - managerEmail
+ *             properties:
+ *               pharmacyName:
+ *                 type: string
+ *                 example: صيدلية النور
+ *               pharmacyPhone:
+ *                 type: string
+ *                 example: "01012345678"
+ *               deliveryArea:
+ *                 type: string
+ *                 example: المعادي، القاهرة
+ *               workingHours:
+ *                 type: string
+ *                 example: 9 صباحاً — 11 مساءً
+ *               managerName:
+ *                 type: string
+ *                 example: Ahmed Mohamed
+ *               managerPhone:
+ *                 type: string
+ *                 example: "01098765432"
+ *               managerEmail:
+ *                 type: string
+ *                 example: ahmed@example.com
+ *               commercialRegister:
+ *                 type: string
+ *                 format: binary
+ *                 description: صورة سجل تجاري
+ *               taxCard:
+ *                 type: string
+ *                 format: binary
+ *                 description: صورة بطاقة ضريبية
+ *               pharmacyLicense:
+ *                 type: string
+ *                 format: binary
+ *                 description: صورة رخصة الصيدلية
+ *     responses:
+ *       200:
+ *         description: تم إرسال الطلب بنجاح
+ *       500:
+ *         description: Server error
+ */
+router.post('/pharmacy-request',
+  upload.fields([
+    { name: 'commercialRegister', maxCount: 1 },
+    { name: 'taxCard', maxCount: 1 },
+    { name: 'pharmacyLicense', maxCount: 1 }
+  ]),
+  submitPharmacyRequest
+);
 
 // router.delete("/logoutAll", auth, async (req, res) => {
 //   try {

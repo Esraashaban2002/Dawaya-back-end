@@ -261,3 +261,70 @@ exports.contactUs = async (req, res) => {
     errorResponse(res , 500 , error.message );
   }
 };
+
+// Contact Us
+/**
+ *
+ * @desc Submit Pharmacy Request
+ * @route POST /api/auth/pharmacy-request
+ */
+exports.submitPharmacyRequest = async (req, res) => {
+  try {
+    const {
+      pharmacyName,
+      pharmacyPhone,
+      deliveryArea,
+      workingHours,
+      managerName,
+      managerPhone,
+      managerEmail
+    } = req.body;
+
+    // إيميل للأدمن مع الصور
+    await sendEmail({
+      to: process.env.EMAIL_USER,
+      subject: `طلب انضمام صيدلية — ${pharmacyName}`,
+      attachments: [
+        req.files?.commercialRegister && {
+          filename: `سجل_تجاري.${req.files.commercialRegister[0].mimetype.split('/')[1]}`,
+          content: req.files.commercialRegister[0].buffer
+        },
+        req.files?.taxCard && {
+          filename: `بطاقة_ضريبية.${req.files.taxCard[0].mimetype.split('/')[1]}`,
+          content: req.files.taxCard[0].buffer
+        },
+        req.files?.pharmacyLicense && {
+          filename: `رخصة_صيدلية.${req.files.pharmacyLicense[0].mimetype.split('/')[1]}`,
+          content: req.files.pharmacyLicense[0].buffer
+        }
+      ].filter(Boolean), // شيل الـ null لو مفيش صور
+      html: `
+        <h2>طلب انضمام صيدلية جديدة</h2>
+        <p><strong>اسم الصيدلية:</strong> ${pharmacyName}</p>
+        <p><strong>تليفون الصيدلية:</strong> ${pharmacyPhone}</p>
+        <p><strong>منطقة التوصيل:</strong> ${deliveryArea}</p>
+        <p><strong>مواعيد العمل:</strong> ${workingHours}</p>
+        <p><strong>اسم المدير:</strong> ${managerName}</p>
+        <p><strong>تليفون المدير:</strong> ${managerPhone}</p>
+        <p><strong>إيميل المدير:</strong> ${managerEmail}</p>
+      `
+    });
+
+    // إيميل شكر للصيدلية
+    await sendEmail({
+      to: managerEmail,
+      subject: 'شكراً لتسجيلك في داوايا ',
+      html: `
+        <h2>مرحباً ${managerName}!</h2>
+        <p>استلمنا بيانات صيدلية <strong>${pharmacyName}</strong> بنجاح.</p>
+        <p> فريقنا هيراجع البيانات وهيرد عليك في أقرب وقت.</p>
+        <p>مع تحيات فريق داوايا 💚</p>
+      `
+    });
+
+    successResponse(res, 200, 'تم إرسال طلبك بنجاح، سيتم التواصل معك قريباً');
+
+  } catch (error) {
+    errorResponse(res, 500, error.message);
+  }
+};
