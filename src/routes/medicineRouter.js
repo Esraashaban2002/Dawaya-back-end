@@ -11,7 +11,7 @@ const { auth, isAdmin } = require('../middlewares/auth');
  *     tags: [Medicines]
  *     parameters:
  *       - in: query
- *         name: name
+ *         name: search
  *         schema:
  *           type: string
  *         description: Search by medicine name

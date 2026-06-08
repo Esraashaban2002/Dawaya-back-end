@@ -10,7 +10,7 @@ const { successResponse, errorResponse } = require('../util/response');
 exports.getAllMedicines = async (req, res) => {
     try {
         const {
-            name,        // بحث بالاسم
+            search,        // بحث بالاسم
             category,    // فلتر بالتصنيف
             page = 1,    // pagination
             limit = 10
@@ -19,8 +19,11 @@ exports.getAllMedicines = async (req, res) => {
         const query = {};
 
         // لو في بحث بالاسم
-        if (name) {
-            query.name = { $regex: name, $options: 'i' }; // i = case insensitive
+        if (search) {
+            query.$or = [
+                { name: { $regex: search, $options: "i" } },
+                { genericName: { $regex: search, $options: "i" } },
+            ];; // i = case insensitive
         };
 
         // لو في فلتر بالتصنيف
@@ -31,11 +34,15 @@ exports.getAllMedicines = async (req, res) => {
         const pageNumber = Number(page);
         const limitNumber = Number(limit);
 
+        const total = await Medicine.countDocuments(query);
+
         const skip = (pageNumber - 1) * limitNumber;
 
-        Medicine.find(query)
+        const medicines = await Medicine.find(query)
+            .sort({ createdAt: -1 })
             .skip(skip)
-            .limit(limitNumber)
+            .limit(limitNumber);
+
 
         successResponse(res, 200, "تمت العملية بنجاح", {
             total,
