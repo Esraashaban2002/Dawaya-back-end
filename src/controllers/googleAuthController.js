@@ -19,8 +19,14 @@ exports.googleCallback = async (req, res, next) => {
     const deviceInfo = req.headers['user-agent'] || 'Unknown Device';
     const accessToken = await generateToken(req.user, deviceInfo);
 
-    // Redirect للـ Frontend مع الـ token
-    res.redirect(`${process.env.FRONTEND_URL}/?token=${accessToken}`);
+    res.cookie('token', accessToken, {
+      httpOnly: false, // لو عاوز الفرونت يقرأه بـ JS
+      secure: true,    // لازم true لو https
+      sameSite: 'none', // عشان cross-domain
+      maxAge: 24 * 60 * 60 * 1000 // يوم مثلاً
+    });
+
+    res.redirect(`${process.env.FRONTEND_URL}/`);
 
   } catch (error) {
     res.redirect(`${process.env.FRONTEND_URL}/auth/error?message=${error.message}`);
