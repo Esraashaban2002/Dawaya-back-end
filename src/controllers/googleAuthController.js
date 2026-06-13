@@ -20,7 +20,7 @@ exports.googleCallback = async (req, res, next) => {
     const accessToken = await generateToken(req.user, deviceInfo);
 
     // Redirect للـ Frontend مع الـ token
-    res.redirect(`${process.env.FRONTEND_URL}/auth/success?token=${accessToken}`);
+    res.redirect(`${process.env.FRONTEND_URL}/?token=${accessToken}`);
 
   } catch (error) {
     res.redirect(`${process.env.FRONTEND_URL}/auth/error?message=${error.message}`);
