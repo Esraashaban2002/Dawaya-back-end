@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const categoryTree = require('../constants/categories');
 
 const medicineSchema = new mongoose.Schema({
   name: {
@@ -11,30 +12,40 @@ const medicineSchema = new mongoose.Schema({
     type: String,
     trim: true   // الاسم العلمي — مثلاً Paracetamol
   },
-  category: {
+  mainCategory: {
     type: String,
     required: true,
-    enum: ['مسكنات', 'مضادات حيوية', 'أدوية مزمنة', 'فيتامينات', 'أخرى']
+    enum: Object.keys(categoryTree)
   },
-  description: {
-    type: String
+  subCategory: {
+    type: String,
+    required: true,
+    validate: {
+      validator: function (value) {
+        return categoryTree[this.mainCategory]?.includes(value);
+      },
+      message: props => `subCategory "${props.value}" غير متوافق مع الفئة الرئيسية المختارة`
+    }
   },
-  price: {
-    type: Number,
-    required: true
-  },
-  requiresPrescription: {
-    type: Boolean,
-    default: false
-  },
-  images: {
-    type: [String],  // array of URLs
-    default: []
-  },
-  manufacturer: {
-    type: String   // الشركة المصنعة
-  }
-}, { timestamps: true });
+    description: {
+      type: String
+    },
+    price: {
+      type: Number,
+      required: true
+    },
+    requiresPrescription: {
+      type: Boolean,
+      default: false
+    },
+    images: {
+      type: [String],  // array of URLs
+      default: []
+    },
+    manufacturer: {
+      type: String   // الشركة المصنعة
+    }
+  }, { timestamps: true });
 
 //  Text index للبحث بالاسم
 medicineSchema.index({ name: 'text', genericName: 'text' });

@@ -69,7 +69,8 @@ router.get('/:id', getMedicineById);
  *             required:
  *               - name
  *               - genericName
- *               - category
+ *               - mainCategory
+ *               - subCategory
  *               - price
  *             properties:
  *               name:
@@ -78,7 +79,10 @@ router.get('/:id', getMedicineById);
  *               genericName:
  *                 type: string
  *                 example: "Ibuprofen"
- *               category:
+ *               mainCategory:
+ *                 type: string
+ *                 example: "الأدوية"
+ *               subCategory:
  *                 type: string
  *                 example: "مسكنات"
  *               description:
@@ -93,9 +97,9 @@ router.get('/:id', getMedicineById);
  *               requiresPrescription:
  *                 type: boolean
  *                 example: false
- *               image:
+ *               images:
  *                 type: string
- *                 example: "https://example.com/image.jpg"
+ *                 example: ["https://example.com/image.jpg"]
  *               manufacturer:
  *                 type: string
  *                 example: "شركة فاركو"
@@ -103,7 +107,7 @@ router.get('/:id', getMedicineById);
  *       201:
  *         description: Medicine created successfully
  *       400:
- *         description: Medicine already exists
+ *         description: Medicine already exists or invalid category
  *       500:
  *         description: Internal server error
  */

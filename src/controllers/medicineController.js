@@ -88,35 +88,21 @@ exports.getMedicineById = async (req, res) => {
  */
 exports.createMedicine = async (req, res) => {
     try {
-        const {
-            name,
-            genericName,
-            category,
-            description,
-            price,
-            requiresPrescription,
-            images,
-            manufacturer
-        } = req.body;
+        const items = Array.isArray(req.body) ? req.body : [req.body];
 
-        // تحقق إن الدواء مش موجود بالاسم ده خلاص
-        const existing = await Medicine.findOne({ name: { $regex: `^${name}$`, $options: 'i' } });
-        if (existing) {
-            return errorResponse(res, 400, 'دواء بالاسم ده موجود بالفعل');
+        // تحقق من التكرار لكل عنصر
+        for (const item of items) {
+            const existing = await Medicine.findOne({ 
+                name: { $regex: `^${item.name}$`, $options: 'i' } 
+            });
+            if (existing) {
+                return errorResponse(res, 400, `دواء بالاسم "${item.name}" موجود بالفعل`);
+            }
         }
 
-        const medicine = await Medicine.create({
-            name,
-            genericName,
-            category,
-            description,
-            price,
-            requiresPrescription,
-            images,
-            manufacturer
-        });
+        const medicines = await Medicine.create(items);
 
-        successResponse(res, 201, 'تم إضافة الدواء بنجاح', medicine);
+        successResponse(res, 201, 'تم إضافة الدواء/الأدوية بنجاح', medicines);
 
     } catch (error) {
         errorResponse(res, 500, error.message);
