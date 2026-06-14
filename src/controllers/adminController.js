@@ -107,11 +107,56 @@ exports.deleteUser = async (req, res) => {
 // PHARMACIES
 // ─────────────────────────────────────────
 
+
 exports.createPharmacy = async (req, res) => {
   try {
-    const pharmacy = await Pharmacy.create(req.body);
+    const {
+      name, address, phone,
+      image, rating, distance, estimatedTime,
+      mapLink, services, isOpen,
+      email, password,
+    } = req.body;
 
-    successResponse(res, 201, 'تم إضافة الصيدلية بنجاح', pharmacy);
+    // ── 1. تأكد إن الإيميل مش موجود قبل كده ──
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return errorResponse(res, 400, 'الإيميل ده مسجّل قبل كده');
+    }
+
+    // ── 2. إنشاء اليوزر بدور pharmacist ──
+    const user = await User.create({
+      username: name,          // اسم الصيدلية كاسم مستخدم
+      email,
+      password,
+      role: 'pharmacist',
+      phone,
+      gender:"male",
+      isVerified:true
+    });
+
+    // ── 3. إنشاء الصيدلية ومربوطة بالـ user ──
+    const pharmacy = await Pharmacy.create({
+      name,
+      address,
+      phone,
+      image,
+      rating,
+      distance,
+      estimatedTime,
+      mapLink,
+      services,
+      isOpen,
+      owner: user._id,         // ربط الصيدلية باليوزر
+    });
+
+    successResponse(res, 201, 'تم إضافة الصيدلية وإنشاء حساب الصيدلاني بنجاح', {
+      pharmacy,
+      user: {
+        _id:   user._id,
+        email: user.email,
+        role:  user.role,
+      },
+    });
 
   } catch (error) {
     errorResponse(res, 500, error.message);

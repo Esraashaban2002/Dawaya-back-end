@@ -162,7 +162,7 @@ router.delete('/users/:id', auth, isAdmin, deleteUser);
  * @swagger
  * /api/admin/pharmacies:
  *   post:
- *     summary: Create new pharmacy
+ *     summary: Create new pharmacy and pharmacist account
  *     tags: [Admin]
  *     security:
  *       - bearerAuth: []
@@ -176,23 +176,49 @@ router.delete('/users/:id', auth, isAdmin, deleteUser);
  *               - name
  *               - address
  *               - phone
- *               - location
+ *               - email
+ *               - password
  *             properties:
  *               name:
  *                 type: string
- *                 example: صيدلية النور
+ *                 example: صيدلية الخير
+ *               email:
+ *                 type: string
+ *                 example: pharmacy@gmail.com
+ *               password:
+ *                 type: string
+ *                 example: "********"
  *               address:
  *                 type: string
- *                 example: شارع التحرير، القاهرة
+ *                 example: فيصل، الجيزة
  *               phone:
  *                 type: string
  *                 example: "01012345678"
- *               location:
- *                 type: object
- *                 example: { "type": "Point", "coordinates": [31.2357, 30.0444] }
+ *               image:
+ *                 type: string
+ *                 example: "https://images/pharmacies/khair.png"
+ *               rating:
+ *                 type: number
+ *                 example: 4.8
+ *               distance:
+ *                 type: string
+ *                 example: "9.2 KM"
+ *               estimatedTime:
+ *                 type: string
+ *                 example: "25 دقيقة"
+ *               mapLink:
+ *                 type: string
+ *                 example: "https://maps.google.com/?q=30.0131,31.2024"
+ *               services:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 example: ["Parking", "24h"]
  *     responses:
  *       201:
- *         description: Pharmacy created successfully
+ *         description: Pharmacy and pharmacist account created successfully
+ *       400:
+ *         description: Email already exists
  *       500:
  *         description: Server error
  */
