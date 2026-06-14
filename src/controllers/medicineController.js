@@ -39,7 +39,7 @@ exports.getAllMedicines = async (req, res) => {
         const skip = (pageNumber - 1) * limitNumber;
 
         const medicines = await Medicine.find(query)
-            .sort({ createdAt: -1 })
+            .sort({ createdAt: 1 })
             .skip(skip)
             .limit(limitNumber);
 
