@@ -14,7 +14,6 @@ exports.googleAuth = (req, res, next) => {
 };
 
 // GET /api/auth/google/callback — middleware
-
 exports.googleCallback = async (req, res, next) => {
   try {
     const deviceInfo = req.headers['user-agent'] || 'Unknown Device';
@@ -27,11 +26,16 @@ exports.googleCallback = async (req, res, next) => {
       maxAge: 24 * 60 * 60 * 1000
     });
  
-    //بعت الـ role مع الـ redirect عشان الـ frontend يعرف يروح فين
+    // بعت الـ role مع الـ redirect عشان الـ frontend يعرف يروح فين
     const role = req.user.role || 'user';
     res.redirect(`${process.env.FRONTEND_URL}/auth/callback?role=${role}`);
  
   } catch (error) {
     res.redirect(`${process.env.FRONTEND_URL}/auth/error?message=${error.message}`);
   }
+};
+ 
+
+exports.googleFailure = (req, res) => {
+  res.redirect(`${process.env.FRONTEND_URL}/auth/error?message=${encodeURIComponent('فشل تسجيل الدخول بـ Google')}`);
 };
