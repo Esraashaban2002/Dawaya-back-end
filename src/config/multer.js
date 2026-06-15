@@ -1,6 +1,6 @@
 const multer = require('multer');
 
-const storage = multer.memoryStorage(); // بيخزن في الـ memory مش على الديسك
+const storage = multer.memoryStorage();
 
 const fileFilter = (req, file, cb) => {
   const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'];

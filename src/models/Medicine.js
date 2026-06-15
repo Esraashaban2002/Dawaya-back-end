@@ -6,11 +6,11 @@ const medicineSchema = new mongoose.Schema({
     type: String,
     required: [true, 'اسم الدواء مطلوب'],
     trim: true,
-    index: true  //  بيسرّع الـ search
+    index: true 
   },
   genericName: {
     type: String,
-    trim: true   // الاسم العلمي — مثلاً Paracetamol
+    trim: true  
   },
   mainCategory: {
     type: String,
@@ -39,15 +39,15 @@ const medicineSchema = new mongoose.Schema({
       default: false
     },
     images: {
-      type: [String],  // array of URLs
+      type: [String],  
       default: []
     },
     manufacturer: {
-      type: String   // الشركة المصنعة
+      type: String   
     }
   }, { timestamps: true });
 
-//  Text index للبحث بالاسم
+
 medicineSchema.index({ name: 'text', genericName: 'text' });
 
 module.exports = mongoose.model('Medicine', medicineSchema);

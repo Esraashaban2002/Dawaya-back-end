@@ -40,7 +40,6 @@ const orderSchema = new mongoose.Schema({
   },
   address: {
     type: String,
-    // required لو delivery بس
   },
   status: {
     type: String,

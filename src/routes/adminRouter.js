@@ -154,9 +154,7 @@ router.patch('/users/:id/role', auth, isAdmin, updateUserRole);
 router.delete('/users/:id', auth, isAdmin, deleteUser);
 
 
-// ─────────────────────────────────────────
 // PHARMACIES
-// ─────────────────────────────────────────
 
 /**
  * @swagger
@@ -309,9 +307,8 @@ router.patch('/pharmacies/:id/toggle', auth, isAdmin, togglePharmacy);
  */
 router.delete('/pharmacies/:id', auth, isAdmin, deletePharmacy);
 
-// ─────────────────────────────────────────
+
 // ORDERS
-// ─────────────────────────────────────────
 
 /**
  * @swagger

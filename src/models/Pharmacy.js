@@ -26,7 +26,7 @@ const pharmacySchema = new mongoose.Schema({
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User'  // pharmacist
+    ref: 'User'
   }
 }, { timestamps: true });
 

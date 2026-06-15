@@ -20,7 +20,6 @@ exports.googleCallback = async (req, res, next) => {
     const accessToken = await generateToken(req.user, deviceInfo);
     const role = req.user.role || 'user';
 
-    // ✅ بعت الـ token في الـ URL بدل الـ cookie
     res.redirect(
       `${process.env.FRONTEND_URL}/auth/callback?token=${accessToken}&role=${role}`
     );

@@ -7,12 +7,12 @@ passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     callbackURL: process.env.GOOGLE_CALLBACK_URL,
-    passReqToCallback: true // عشان نوصل للـ request
+    passReqToCallback: true 
   },
   async (req, accessToken, refreshToken, profile, done) => {
     try {
       const email = profile.emails[0].value;
-      const action = req.query.state; // login أو register
+      const action = req.query.state; // login or register
 
       let user = await User.findOne({ 
         $or: [{ googleId: profile.id }, { email }] 
@@ -25,7 +25,7 @@ passport.use(new GoogleStrategy({
             message: 'الحساب مش موجود — سجل حساب الأول' 
           });
         }
-        // ربط الـ googleId لو مش مربوط
+        // link googleId 
         if (!user.googleId) {
           user.googleId = profile.id;
           await user.save();
@@ -33,14 +33,14 @@ passport.use(new GoogleStrategy({
         return done(null, user);
       }
 
-      // ─── حالة REGISTER ───
+      // REGISTER
       if (action === 'register') {
         if (user) {
           return done(null, false, { 
             message: 'الحساب موجود بالفعل — سجل دخول' 
           });
         }
-        // إنشاء حساب جديد
+        
         user = await User.create({
           googleId: profile.id,
           username: profile.displayName,

@@ -1,7 +1,7 @@
 const Medicine = require('../models/Medicine');
 const { successResponse, errorResponse } = require('../util/response');
 
-// GET /api/medicines — كل الأدوية مع فلتر وبحث
+// GET /api/medicines 
 /**
  *
  * @desc Get All Medicines
@@ -10,15 +10,14 @@ const { successResponse, errorResponse } = require('../util/response');
 exports.getAllMedicines = async (req, res) => {
     try {
         const {
-            search,        // بحث بالاسم
-            category,    // فلتر بالتصنيف
-            page = 1,    // pagination
+            search,        
+            category,    
+            page = 1,    
             limit = 10
         } = req.query;
 
         const query = {};
 
-        // لو في بحث بالاسم
         if (search) {
             query.$or = [
                 { name: { $regex: search, $options: "i" } },
@@ -26,7 +25,6 @@ exports.getAllMedicines = async (req, res) => {
             ];; // i = case insensitive
         };
 
-        // لو في فلتر بالتصنيف
         if (category) {
             query.category = category;
         };
@@ -56,7 +54,7 @@ exports.getAllMedicines = async (req, res) => {
     };
 };
 
-// GET /api/medicines/:id — دواء معين
+// GET /api/medicines/:id 
 /**
  *
  * @desc Get Medicine By Id
@@ -78,9 +76,7 @@ exports.getMedicineById = async (req, res) => {
 };
 
 
-// ─────────────────────────────────────────
-// POST /api/medicines — إضافة دواء جديد (Admin)
-// ─────────────────────────────────────────
+// POST /api/medicines 
 /**
  * @desc Create New Medicine
  * @route POST /api/medicines
@@ -90,7 +86,6 @@ exports.createMedicine = async (req, res) => {
     try {
         const items = Array.isArray(req.body) ? req.body : [req.body];
 
-        // تحقق من التكرار لكل عنصر
         for (const item of items) {
             const existing = await Medicine.findOne({ 
                 name: { $regex: `^${item.name}$`, $options: 'i' } 
@@ -109,9 +104,7 @@ exports.createMedicine = async (req, res) => {
     }
 };
 
-// ─────────────────────────────────────────
-// PUT /api/medicines/:id — تعديل دواء (Admin)
-// ─────────────────────────────────────────
+// PUT /api/medicines/:id 
 /**
  * @desc Update Medicine
  * @route PUT /api/medicines/:id
@@ -144,9 +137,7 @@ exports.updateMedicine = async (req, res) => {
     }
 };
 
-// ─────────────────────────────────────────
-// DELETE /api/medicines/:id — حذف دواء (Admin)
-// ─────────────────────────────────────────
+// DELETE /api/medicines/:id 
 /**
  * @desc Delete Medicine
  * @route DELETE /api/medicines/:id

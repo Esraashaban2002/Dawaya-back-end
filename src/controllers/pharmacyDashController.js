@@ -10,7 +10,6 @@ const { successResponse, errorResponse } = require('../util/response');
 
 exports.getStats = async (req, res) => {
   try {
-    // جيب الصيدلية بتاعت الفارماسيست ده
     const pharmacy = await Pharmacy.findOne({ owner: req.user._id });
 
     if (!pharmacy) {
@@ -21,7 +20,7 @@ exports.getStats = async (req, res) => {
       Order.countDocuments({ pharmacy: pharmacy._id }),
       Order.countDocuments({ pharmacy: pharmacy._id, status: 'pending' }),
       Stock.countDocuments({ pharmacy: pharmacy._id }),
-      Stock.countDocuments({ pharmacy: pharmacy._id, quantity: { $lte: 10 } }) // مخزون منخفض
+      Stock.countDocuments({ pharmacy: pharmacy._id, quantity: { $lte: 10 } })
     ]);
 
     successResponse(res, 200, "تمت العمليه بنجاح", {
@@ -36,10 +35,7 @@ exports.getStats = async (req, res) => {
   }
 };
 
-// ─────────────────────────────────────────
 // PROFILE
-// ─────────────────────────────────────────
-
 exports.getProfile = async (req, res) => {
   try {
     const pharmacy = await Pharmacy.findOne({ owner: req.user._id });
@@ -82,10 +78,7 @@ exports.updateProfile = async (req, res) => {
   }
 };
 
-// ─────────────────────────────────────────
 // STOCK
-// ─────────────────────────────────────────
-
 exports.getStock = async (req, res) => {
   try {
     const pharmacy = await Pharmacy.findOne({ owner: req.user._id });
@@ -117,13 +110,11 @@ exports.addStock = async (req, res) => {
       return errorResponse(res, 404, 'مش عندك صيدلية مسجلة');
     }
 
-    // تحقق إن الدواء موجود
     const medicine = await Medicine.findById(medicineId);
     if (!medicine) {
       return errorResponse(res, 404, 'الدواء مش موجود');
     }
 
-    // تحقق إن الدواء مش موجود في المخزون خلاص
     const existingStock = await Stock.findOne({
       pharmacy: pharmacy._id,
       medicine: medicineId
@@ -160,7 +151,7 @@ exports.updateStock = async (req, res) => {
     }
 
     const stock = await Stock.findOneAndUpdate(
-      { _id: req.params.id, pharmacy: pharmacy._id }, // تأكد إن المخزون بتاعه هو
+      { _id: req.params.id, pharmacy: pharmacy._id }, 
       { quantity, price },
       { new: true, runValidators: true }
     ).populate('medicine', 'name genericName category');
@@ -186,7 +177,7 @@ exports.deleteStock = async (req, res) => {
 
     const stock = await Stock.findOneAndDelete({
       _id: req.params.id,
-      pharmacy: pharmacy._id // تأكد إن المخزون بتاعه هو
+      pharmacy: pharmacy._id 
     });
 
     if (!stock) {
@@ -200,10 +191,7 @@ exports.deleteStock = async (req, res) => {
   }
 };
 
-// ─────────────────────────────────────────
 // ORDERS
-// ─────────────────────────────────────────
-
 exports.getOrders = async (req, res) => {
   try {
     const { status, page = 1, limit = 10 } = req.query;
@@ -249,7 +237,6 @@ exports.updateOrderStatus = async (req, res) => {
       return errorResponse(res, 404, 'مش عندك صيدلية مسجلة');
     }
 
-    // تأكد إن الطلب بتاع صيدليته هو بس
     const order = await Order.findOneAndUpdate(
       { _id: req.params.id, pharmacy: pharmacy._id },
       { status },

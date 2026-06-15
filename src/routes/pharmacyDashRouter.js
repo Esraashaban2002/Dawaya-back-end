@@ -11,9 +11,7 @@ const {
   getOrders, updateOrderStatus
 } = require('../controllers/pharmacyDashController');
 
-// ─────────────────────────────────────────
 // STATS
-// ─────────────────────────────────────────
 
 /**
  * @swagger
@@ -31,9 +29,7 @@ const {
  */
 router.get('/stats', auth, isPharmacist, getStats);
 
-// ─────────────────────────────────────────
 // PROFILE
-// ─────────────────────────────────────────
 
 /**
  * @swagger
@@ -86,9 +82,7 @@ router.get('/profile', auth, isPharmacist, getProfile);
  */
 router.put('/profile', auth, isPharmacist, updateProfile);
 
-// ─────────────────────────────────────────
 // STOCK
-// ─────────────────────────────────────────
 
 /**
  * @swagger
@@ -203,9 +197,7 @@ router.put('/stock/:id', auth, isPharmacist, updateStock);
  */
 router.delete('/stock/:id', auth, isPharmacist, deleteStock);
 
-// ─────────────────────────────────────────
 // ORDERS
-// ─────────────────────────────────────────
 
 /**
  * @swagger

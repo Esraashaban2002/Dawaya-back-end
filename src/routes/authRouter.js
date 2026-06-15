@@ -268,16 +268,6 @@ router.post('/pharmacy-request',
   submitPharmacyRequest
 );
 
-// router.delete("/logoutAll", auth, async (req, res) => {
-//   try {
-//     req.user.tokens = [];
-//     await req.user.save();
-//     res.send({ message: "Logged out from all sessions." });
-//   } catch (e) {
-//     res.status(500).send({ error: e.message });
-//   }
-// });
-
 /**
  * @swagger
  * /api/auth/google:
@@ -300,7 +290,7 @@ router.get('/google', googleAuth);
  *       302:
  *         description: Redirect to frontend with token
  */
-// الـ Callback
+// Callback
 router.get('/google/callback',
   (req, res, next) => {
     passport.authenticate('google', { 
@@ -319,7 +309,7 @@ router.get('/google/callback',
   googleCallback 
 );
 
-// لما بيفشل
+// Failure
 router.get('/google/failure', googleFailure);
 
 module.exports = router;

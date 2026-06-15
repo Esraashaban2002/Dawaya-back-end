@@ -3,10 +3,8 @@ const Pharmacy = require('../models/Pharmacy');
 const Order = require('../models/Order');
 const { successResponse, errorResponse } = require('../util/response');
 
-// ─────────────────────────────────────────
-// STATS
-// ─────────────────────────────────────────
 
+// STATS
 exports.getStats = async (req, res) => {
   try {
     const [users, pharmacies, orders] = await Promise.all([
@@ -22,10 +20,7 @@ exports.getStats = async (req, res) => {
   }
 };
 
-// ─────────────────────────────────────────
 // USERS
-// ─────────────────────────────────────────
-
 exports.getAllUsers = async (req, res) => {
   try {
     const { role, page = 1, limit = 10 } = req.query;
@@ -103,11 +98,7 @@ exports.deleteUser = async (req, res) => {
   }
 };
 
-// ─────────────────────────────────────────
 // PHARMACIES
-// ─────────────────────────────────────────
-
-
 exports.createPharmacy = async (req, res) => {
   try {
     const {
@@ -117,15 +108,12 @@ exports.createPharmacy = async (req, res) => {
       email, password,
     } = req.body;
 
-    // ── 1. تأكد إن الإيميل مش موجود قبل كده ──
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return errorResponse(res, 400, 'الإيميل ده مسجّل قبل كده');
     }
-
-    // ── 2. إنشاء اليوزر بدور pharmacist ──
     const user = await User.create({
-      username: name,          // اسم الصيدلية كاسم مستخدم
+      username: name,          
       email,
       password,
       role: 'pharmacist',
@@ -134,7 +122,6 @@ exports.createPharmacy = async (req, res) => {
       isVerified:true
     });
 
-    // ── 3. إنشاء الصيدلية ومربوطة بالـ user ──
     const pharmacy = await Pharmacy.create({
       name,
       address,
@@ -146,7 +133,7 @@ exports.createPharmacy = async (req, res) => {
       mapLink,
       services,
       isOpen,
-      owner: user._id,         // ربط الصيدلية باليوزر
+      owner: user._id,         
     });
 
     successResponse(res, 201, 'تم إضافة الصيدلية وإنشاء حساب الصيدلاني بنجاح', {
@@ -215,10 +202,7 @@ exports.deletePharmacy = async (req, res) => {
   }
 };
 
-// ─────────────────────────────────────────
 // ORDERS
-// ─────────────────────────────────────────
-
 exports.getAllOrders = async (req, res) => {
   try {
     const { status, page = 1, limit = 10 } = req.query;

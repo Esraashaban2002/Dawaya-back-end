@@ -230,7 +230,7 @@ exports.contactUs = async (req, res) => {
   try {
     const { name, email, message } = req.body;
 
-    // بعت الرسالة على إيميل الشركة
+    //  send message to campany email
     await sendEmail({
       to: process.env.EMAIL_USER,
       subject: `رسالة جديدة من ${name}`,
@@ -243,7 +243,7 @@ exports.contactUs = async (req, res) => {
       `
     });
 
-    // بعت رسالة تأكيد للمستخدم
+    //  send message to confirm user
     await sendEmail({
       to: email,
       subject: 'شكراً لتواصلك مع داوايا',
@@ -280,7 +280,6 @@ exports.submitPharmacyRequest = async (req, res) => {
       managerEmail
     } = req.body;
 
-    // إيميل للأدمن مع الصور
     await sendEmail({
       to: process.env.EMAIL_USER,
       subject: `طلب انضمام صيدلية — ${pharmacyName}`,
@@ -297,7 +296,7 @@ exports.submitPharmacyRequest = async (req, res) => {
           filename: `رخصة_صيدلية.${req.files.pharmacyLicense[0].mimetype.split('/')[1]}`,
           content: req.files.pharmacyLicense[0].buffer
         }
-      ].filter(Boolean), // شيل الـ null لو مفيش صور
+      ].filter(Boolean), 
       html: `
         <h2>طلب انضمام صيدلية جديدة</h2>
         <p><strong>اسم الصيدلية:</strong> ${pharmacyName}</p>
@@ -310,7 +309,6 @@ exports.submitPharmacyRequest = async (req, res) => {
       `
     });
 
-    // إيميل شكر للصيدلية
     await sendEmail({
       to: managerEmail,
       subject: 'شكراً لتسجيلك في داوايا ',

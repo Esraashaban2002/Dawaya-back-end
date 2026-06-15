@@ -18,7 +18,7 @@ const stockSchema = new mongoose.Schema({
   },
   price: {
     type: Number,
-    required: true  // كل صيدلية ممكن يكون عندها سعر مختلف
+    required: true 
   }
 }, { timestamps: true });
 
