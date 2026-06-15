@@ -14,25 +14,24 @@ exports.googleAuth = (req, res, next) => {
 };
 
 // GET /api/auth/google/callback — middleware
+
 exports.googleCallback = async (req, res, next) => {
   try {
     const deviceInfo = req.headers['user-agent'] || 'Unknown Device';
     const accessToken = await generateToken(req.user, deviceInfo);
-
+ 
     res.cookie('token', accessToken, {
-      httpOnly: false, // لو عاوز الفرونت يقرأه بـ JS
-      secure: true,    // لازم true لو https
-      sameSite: 'none', // عشان cross-domain
-      maxAge: 24 * 60 * 60 * 1000 // يوم مثلاً
+      httpOnly: false,
+      secure: true,
+      sameSite: 'none',
+      maxAge: 24 * 60 * 60 * 1000
     });
-
-    res.redirect(`${process.env.FRONTEND_URL}/`);
-
+ 
+    //بعت الـ role مع الـ redirect عشان الـ frontend يعرف يروح فين
+    const role = req.user.role || 'user';
+    res.redirect(`${process.env.FRONTEND_URL}/auth/callback?role=${role}`);
+ 
   } catch (error) {
     res.redirect(`${process.env.FRONTEND_URL}/auth/error?message=${error.message}`);
   }
-};
-
-exports.googleFailure = (req, res) => {
-  res.redirect(`${process.env.FRONTEND_URL}/auth/error?message=${encodeURIComponent('فشل تسجيل الدخول بـ Google')}`);
 };
