@@ -18,23 +18,16 @@ exports.googleCallback = async (req, res, next) => {
   try {
     const deviceInfo = req.headers['user-agent'] || 'Unknown Device';
     const accessToken = await generateToken(req.user, deviceInfo);
- 
-    res.cookie('token', accessToken, {
-      httpOnly: false,
-      secure: true,
-      sameSite: 'none',
-      maxAge: 24 * 60 * 60 * 1000
-    });
- 
-    // بعت الـ role مع الـ redirect عشان الـ frontend يعرف يروح فين
     const role = req.user.role || 'user';
-    res.redirect(`${process.env.FRONTEND_URL}/auth/callback?role=${role}`);
- 
+
+    // ✅ بعت الـ token في الـ URL بدل الـ cookie
+    res.redirect(
+      `${process.env.FRONTEND_URL}/auth/callback?token=${accessToken}&role=${role}`
+    );
   } catch (error) {
     res.redirect(`${process.env.FRONTEND_URL}/auth/error?message=${error.message}`);
   }
 };
- 
 
 exports.googleFailure = (req, res) => {
   res.redirect(`${process.env.FRONTEND_URL}/auth/error?message=${encodeURIComponent('فشل تسجيل الدخول بـ Google')}`);
