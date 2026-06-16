@@ -2,7 +2,7 @@ const User = require('../models/User');
 const Pharmacy = require('../models/Pharmacy');
 const Order = require('../models/Order');
 const { successResponse, errorResponse } = require('../util/response');
-
+const PharmacyRequest = require('../models/PharmacyRequest');
 
 // STATS
 exports.getStats = async (req, res) => {
@@ -249,6 +249,101 @@ exports.updateOrderStatus = async (req, res) => {
 
     successResponse(res, 200, 'تم تحديث حالة الطلب', order);
 
+  } catch (error) {
+    errorResponse(res, 500, error.message);
+  }
+};
+
+ 
+/**
+ * @desc Get all pharmacy join requests
+ * @route GET /api/admin/pharmacy-requests
+ */
+exports.getPharmacyRequests = async (req, res) => {
+  try {
+    const { status, page = 1, limit = 10 } = req.query;
+ 
+    const filter = {};
+    if (status) filter.status = status;
+ 
+    const skip = (Number(page) - 1) * Number(limit);
+ 
+    const [requests, total] = await Promise.all([
+      PharmacyRequest.find(filter)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(Number(limit)),
+      PharmacyRequest.countDocuments(filter),
+    ]);
+ 
+    successResponse(res, 200, 'تم جلب طلبات الصيدليات بنجاح', {
+      data:  requests,
+      total,
+      page:  Number(page),
+      pages: Math.ceil(total / Number(limit)),
+    });
+  } catch (error) {
+    errorResponse(res, 500, error.message);
+  }
+};
+ 
+/**
+ * @desc Get single pharmacy request by id
+ * @route GET /api/admin/pharmacy-requests/:id
+ */
+exports.getPharmacyRequestById = async (req, res) => {
+  try {
+    const request = await PharmacyRequest.findById(req.params.id);
+    if (!request) {
+      return errorResponse(res, 404, 'الطلب غير موجود');
+    }
+    successResponse(res, 200, 'تم جلب الطلب بنجاح', request);
+  } catch (error) {
+    errorResponse(res, 500, error.message);
+  }
+};
+ 
+/**
+ * @desc Update pharmacy request status (approve / reject)
+ * @route PATCH /api/admin/pharmacy-requests/:id/status
+ */
+exports.updatePharmacyRequestStatus = async (req, res) => {
+  try {
+    const { status, adminNote } = req.body; // 'approved' | 'rejected'
+ 
+    if (!['approved', 'rejected', 'pending'].includes(status)) {
+      return errorResponse(res, 400, 'حالة غير صحيحة');
+    }
+ 
+    const request = await PharmacyRequest.findById(req.params.id);
+    if (!request) {
+      return errorResponse(res, 404, 'الطلب غير موجود');
+    }
+ 
+    request.status     = status;
+    request.adminNote  = adminNote || '';
+    request.reviewedBy = req.user._id;
+    request.reviewedAt = new Date();
+ 
+    await request.save();
+ 
+    successResponse(res, 200, 'تم تحديث حالة الطلب بنجاح', request);
+  } catch (error) {
+    errorResponse(res, 500, error.message);
+  }
+};
+ 
+/**
+ * @desc Delete pharmacy request
+ * @route DELETE /api/admin/pharmacy-requests/:id
+ */
+exports.deletePharmacyRequest = async (req, res) => {
+  try {
+    const request = await PharmacyRequest.findByIdAndDelete(req.params.id);
+    if (!request) {
+      return errorResponse(res, 404, 'الطلب غير موجود');
+    }
+    successResponse(res, 200, 'تم حذف الطلب بنجاح');
   } catch (error) {
     errorResponse(res, 500, error.message);
   }

@@ -8,7 +8,11 @@ const {
   getStats,
   getAllUsers, getUserById, updateUserRole, deleteUser,
   createPharmacy, updatePharmacy, togglePharmacy, deletePharmacy,
-  getAllOrders, updateOrderStatus
+  getAllOrders, updateOrderStatus,
+  deletePharmacyRequest,
+  updatePharmacyRequestStatus,
+  getPharmacyRequestById,
+  getPharmacyRequests
 } = require('../controllers/adminController');
 
 // ─────────────────────────────────────────
@@ -381,5 +385,127 @@ router.get('/orders', auth, isAdmin, getAllOrders);
  *         description: Order not found
  */
 router.patch('/orders/:id/status', auth, isAdmin, updateOrderStatus);
+
+
+
+/**
+ * @swagger
+ * /api/admin/pharmacy-requests:
+ *   get:
+ *     summary: Get all pharmacy join requests
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [pending, approved, rejected]
+ *         example: pending
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *         example: 1
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *         example: 10
+ *     responses:
+ *       200:
+ *         description: List of pharmacy requests
+ *       403:
+ *         description: Forbidden
+ */
+router.get('/pharmacy-requests', auth, isAdmin, getPharmacyRequests);
+ 
+/**
+ * @swagger
+ * /api/admin/pharmacy-requests/{id}:
+ *   get:
+ *     summary: Get single pharmacy request
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *         example: 64f1a2b3c4d5e6f7a8b9c0d1
+ *     responses:
+ *       200:
+ *         description: Pharmacy request details
+ *       404:
+ *         description: Request not found
+ */
+router.get('/pharmacy-requests/:id', auth, isAdmin, getPharmacyRequestById);
+ 
+/**
+ * @swagger
+ * /api/admin/pharmacy-requests/{id}/status:
+ *   patch:
+ *     summary: Approve or reject a pharmacy request
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *         example: 64f1a2b3c4d5e6f7a8b9c0d1
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - status
+ *             properties:
+ *               status:
+ *                 type: string
+ *                 enum: [approved, rejected, pending]
+ *                 example: approved
+ *               adminNote:
+ *                 type: string
+ *                 example: "تمت الموافقة بعد مراجعة المستندات"
+ *     responses:
+ *       200:
+ *         description: Status updated successfully
+ *       400:
+ *         description: Invalid status
+ *       404:
+ *         description: Request not found
+ */
+router.patch('/pharmacy-requests/:id/status', auth, isAdmin, updatePharmacyRequestStatus);
+ 
+/**
+ * @swagger
+ * /api/admin/pharmacy-requests/{id}:
+ *   delete:
+ *     summary: Delete pharmacy request
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *         example: 64f1a2b3c4d5e6f7a8b9c0d1
+ *     responses:
+ *       200:
+ *         description: Pharmacy request deleted successfully
+ *       404:
+ *         description: Request not found
+ */
+router.delete('/pharmacy-requests/:id', auth, isAdmin, deletePharmacyRequest);
 
 module.exports = router;

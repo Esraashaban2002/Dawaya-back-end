@@ -2,6 +2,8 @@
 const { sendEmail } = require("../config/mailer");
 const User = require("../models/User");
 const { generateToken } = require("../util/generateToken");
+const PharmacyRequest = require('../models/PharmacyRequest');
+
 const {
   successResponse,
   errorResponse,
@@ -280,6 +282,24 @@ exports.submitPharmacyRequest = async (req, res) => {
       managerEmail
     } = req.body;
 
+    // save in database
+     const request = await PharmacyRequest.create({
+      pharmacyName,
+      pharmacyPhone,
+      deliveryArea,
+      workingHours,
+      managerName,
+      managerPhone,
+      managerEmail,
+      documents: {
+        commercialRegister: req.files?.commercialRegister?.[0]?.originalname || '',
+        taxCard:             req.files?.taxCard?.[0]?.originalname || '',
+        pharmacyLicense:     req.files?.pharmacyLicense?.[0]?.originalname || '',
+      },
+    });
+
+    try{
+    // send mail to admin 
     await sendEmail({
       to: process.env.EMAIL_USER,
       subject: `طلب انضمام صيدلية — ${pharmacyName}`,
@@ -319,6 +339,9 @@ exports.submitPharmacyRequest = async (req, res) => {
         <p>مع تحيات فريق داوايا 💚</p>
       `
     });
+      } catch (emailError) {
+      console.error('فشل إرسال إيميل طلب الصيدلية:', emailError.message);
+    }
 
     successResponse(res, 200, 'تم إرسال طلبك بنجاح، سيتم التواصل معك قريباً');
 
